@@ -41,7 +41,9 @@ const Dashboard = ({ user }: { user: User }) => {
   );
 
   useEffect(() => {
-    getActiveWalletBalance(user?.wallets[0]);
+    getActiveWalletBalance(
+      user?.wallets.find((w) => w.isprimarywallet) || user?.wallets[0]
+    );
   }, [user?.wallets]);
 
   //   create a timer that polls the balance every 10 seconds
