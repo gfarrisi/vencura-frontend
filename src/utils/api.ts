@@ -3,7 +3,7 @@ import getConfig from "next/config";
 const { publicRuntimeConfig } = getConfig();
 
 export const EXPRESS_LOCAL_URL = "http://localhost:3004/";
-export const EXPRESS_PROD_URL = "";
+export const EXPRESS_PROD_URL = "https://api.vencura.xyz/";
 export const EXPRESS_BASE_URL =
   publicRuntimeConfig.appEnvironment === "development"
     ? EXPRESS_LOCAL_URL
@@ -70,11 +70,7 @@ const mergeExpressHeaders = (options?: RequestOptions) => ({
 });
 
 const api = {
-  get: async <T>(
-    url: string,
-    options?: RequestOptions,
-    cache?: number
-  ): Promise<T> =>
+  get: async <T>(url: string, options?: RequestOptions): Promise<T> =>
     request(
       EXPRESS_BASE_URL + url,
       "GET",
@@ -87,7 +83,6 @@ const api = {
   post: async <T>(
     url: string,
     options?: RequestOptions,
-    cache?: number,
     noDefaultHeaders?: boolean
   ): Promise<T> =>
     request(

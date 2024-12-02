@@ -1,13 +1,11 @@
-import { User, UserWallet } from "@/types/user";
+import { UserWallet } from "@/types/user";
 import { Stack, Text, Group, ScrollArea } from "@mantine/core";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import PayVencuraFooter from "./PayVencuraFooter";
-import WalletBalance from "./WalletBalance";
-import { activeWalletAtom, transactionsAtom } from "@/atoms/walletAtom";
+import { useCallback, useEffect } from "react";
+import { transactionsAtom } from "@/atoms/walletAtom";
 import { useAtom } from "jotai";
 import api from "@/utils/api";
-import { formatWalletAddress, getImageUrl } from "./WalletMenu";
+import { formatWalletAddress } from "./WalletMenu";
 
 export const formatDate = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
@@ -71,6 +69,7 @@ const TransactionHistory = ({ activeWallet }: { activeWallet: UserWallet }) => {
         {transactions?.map((txn) => {
           return (
             <div
+              key={txn.txnHash}
               style={{
                 backgroundColor: "white",
                 borderRadius: 15,

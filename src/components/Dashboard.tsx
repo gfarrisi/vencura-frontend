@@ -1,6 +1,5 @@
 import { User, UserWallet } from "@/types/user";
-import { Container, Text, AppShell, UnstyledButton, Tabs } from "@mantine/core";
-import Image from "next/image";
+import { Container, AppShell, Tabs } from "@mantine/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import PayVencuraFooter from "./PayVencuraFooter";
 import WalletBalance from "./WalletBalance";
@@ -10,13 +9,11 @@ import WalletMenu from "./WalletMenu";
 import { activeWalletAtom } from "@/atoms/walletAtom";
 import { useAtom } from "jotai";
 import PayModal from "./PayModal";
-import useUserWalletBalances from "@/hooks/useUserWallets";
 import api from "@/utils/api";
 
 type TabItem = {
   value: string;
   id: "wallet" | "transactions";
-  icon?: JSX.Element;
 };
 
 const Dashboard = ({ user }: { user: User }) => {
@@ -67,12 +64,10 @@ const Dashboard = ({ user }: { user: User }) => {
       {
         value: "WALLET",
         id: "wallet",
-        icon: <></>,
       },
       {
         value: "TRANSACTIONS",
         id: "transactions",
-        icon: <></>,
       },
     ],
     []
@@ -117,9 +112,10 @@ const Dashboard = ({ user }: { user: User }) => {
               >
                 <Tabs.List mb={"lg"}>
                   {views.map((v) => {
-                    const { icon, value, id } = v;
+                    const { value, id } = v;
                     return (
                       <Tabs.Tab
+                        key={id}
                         value={value}
                         disabled={false}
                         style={{

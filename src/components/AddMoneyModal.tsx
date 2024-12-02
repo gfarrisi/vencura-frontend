@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { UserWallet } from "@/types/user";
-import { Button, Text } from "@mantine/core";
 import { IconCopy } from "@tabler/icons-react";
 import { formatBalanceEth } from "./WalletBalance";
 import api from "@/utils/api";
@@ -19,7 +18,6 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
   wallet,
   userWallets,
 }) => {
-  if (!isOpen) return null;
   const [hasMoreThanOneWallet, setHasMoreThanOneWallet] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState<{
     value: string;
@@ -34,6 +32,12 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setHasMoreThanOneWallet(userWallets.length > 1);
+  }, [userWallets]);
+
+  if (!isOpen) return null;
+
   const copyAddress = async () => {
     try {
       await navigator.clipboard.writeText(wallet.address);
@@ -42,10 +46,6 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
       console.error("Failed to copy address:", err);
     }
   };
-
-  useEffect(() => {
-    setHasMoreThanOneWallet(userWallets.length > 1);
-  }, [userWallets]);
 
   const otherWallets = userWallets.filter((w) => w.address !== wallet.address);
 

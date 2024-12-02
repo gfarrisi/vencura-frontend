@@ -1,17 +1,13 @@
-import { Text, Box, UnstyledButton, Modal } from "@mantine/core";
+import { Text, Box, UnstyledButton } from "@mantine/core";
 import Image from "next/image";
-import { useState } from "react";
-import PayModal from "./PayModal";
 
 const PayVencuraFooter = ({
   setOpenPayModal,
 }: {
   setOpenPayModal: (value: boolean) => void;
 }) => {
-  //   const [openPayModal, setOpenPayModal] = useState<boolean>(false);
   return (
     <div>
-      {/* <PayModal opened={openPayModal} setOpened={setOpenPayModal} /> */}
       <Box
         style={{
           backgroundColor: "white",

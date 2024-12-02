@@ -1,17 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
-import localFont from "next/font/local";
-import styles from "@/styles/Home.module.css";
-import Home from "@/components/Home";
-import {
-  Button,
-  Container,
-  Stack,
-  Text,
-  AppShell,
-  Center,
-  Group,
-} from "@mantine/core";
+import { Button, Container, Stack, Text, AppShell } from "@mantine/core";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { useCallback, useEffect } from "react";
 import { userAuthAtom, userAtom } from "@/atoms/userAtom";
@@ -20,22 +9,10 @@ import api from "@/utils/api";
 import { User } from "@/types/user";
 import Dashboard from "@/components/Dashboard";
 
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
-
 export default function HomePage() {
   const [userAuth, setUserAuth] = useAtom(userAuthAtom);
   const [user, setUser] = useAtom(userAtom);
-  const { setShowAuthFlow, authToken, primaryWallet, handleLogOut } =
-    useDynamicContext();
+  const { setShowAuthFlow, authToken, handleLogOut } = useDynamicContext();
 
   const handleGetStartedButtonClick = useCallback(() => {
     setShowAuthFlow(true);
@@ -68,7 +45,7 @@ export default function HomePage() {
     setUserAuth(false);
     setUser(undefined);
     handleLogOut();
-  }, [setUserAuth, handleLogOut]);
+  }, [setUserAuth, setUser, handleLogOut]);
 
   return (
     <>

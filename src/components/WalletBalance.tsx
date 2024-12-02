@@ -1,9 +1,6 @@
-import { activeWalletAtom } from "@/atoms/walletAtom";
 import { User, UserWallet } from "@/types/user";
 import { Button, Text } from "@mantine/core";
-import { useAtom } from "jotai";
-import { useCallback, useEffect, useState } from "react";
-import api from "@/utils/api";
+import { useState } from "react";
 import AddMoneyModal from "./AddMoneyModal";
 
 export function formatBalanceEth(balance: number | string) {
@@ -17,8 +14,6 @@ const WalletBalance = ({
   activeWallet: UserWallet;
   user: User;
 }) => {
-  const [, setActiveWallet] = useAtom(activeWalletAtom);
-  const [ethPrice, setEthPrice] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

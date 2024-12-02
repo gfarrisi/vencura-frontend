@@ -3,7 +3,7 @@ import { transactionsAtom } from "@/atoms/walletAtom";
 import { User, UserWallet } from "@/types/user";
 import api from "@/utils/api";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { Button, Container, Text, UnstyledButton } from "@mantine/core";
+import { Container, Text, UnstyledButton } from "@mantine/core";
 import { ethers } from "ethers";
 import { useAtom } from "jotai";
 import Image from "next/image";
@@ -33,7 +33,7 @@ const WalletMenu = ({
   const [image, setImage] = useState<string | undefined>(undefined);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [user, setUser] = useAtom(userAtom);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [, setTransactions] = useAtom(transactionsAtom);
   const { handleLogOut } = useDynamicContext();

@@ -1,6 +1,5 @@
 import { UserWallet } from "@/types/user";
 import api from "@/utils/api";
-import { Input } from "@mantine/core";
 import { useCallback, useState } from "react";
 import { parseEther } from "viem";
 import { formatBalanceEth } from "./WalletBalance";
