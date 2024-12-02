@@ -1,0 +1,114 @@
+import { activeWalletAtom } from "@/atoms/walletAtom";
+import { User, UserWallet } from "@/types/user";
+import { Button, Text } from "@mantine/core";
+import { useAtom } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+import api from "@/utils/api";
+import AddMoneyModal from "./AddMoneyModal";
+
+export function formatBalanceEth(balance: number | string) {
+  return `${Number(balance).toFixed(4)} ETH`;
+}
+
+const WalletBalance = ({
+  activeWallet,
+  user,
+}: {
+  activeWallet: UserWallet;
+  user: User;
+}) => {
+  const [, setActiveWallet] = useAtom(activeWalletAtom);
+  const [ethPrice, setEthPrice] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const getActiveWalletBalance = useCallback(async () => {
+    const getBalance = await api.get<{ balance: number }>(
+      `wallet/${activeWallet.id}/balance`
+    );
+    setActiveWallet({
+      ...activeWallet,
+      balance: getBalance.balance,
+    });
+  }, [activeWallet.address]);
+
+  useEffect(() => {
+    getActiveWalletBalance();
+  }, [getActiveWalletBalance]);
+
+  //create a timer that polls the balance every 10 seconds
+  //   useEffect(() => {
+  //     const interval = setInterval(() => {
+  //       getActiveWalletBalance();
+  //     }, 10000);
+  //     return () => clearInterval(interval);
+  //   }, [getActiveWalletBalance]);
+
+  return (
+    <>
+      <div
+        style={{
+          backgroundColor: "#eceef8",
+          borderRadius: 15,
+          padding: "15px 20px",
+          width: 280,
+          margin: "auto",
+        }}
+      >
+        <Text
+          style={{
+            color: "black",
+          }}
+        >
+          Amount
+        </Text>
+        <Text
+          style={{
+            color: "black",
+            fontSize: 40,
+            fontWeight: 600,
+            marginTop: 10,
+          }}
+        >
+          {activeWallet.balance
+            ? formatBalanceEth(activeWallet.balance || 0)
+            : "--"}
+          {/* ${formatBalance(activeWallet.balance || 0, ethPrice)} */}
+        </Text>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            styles={{
+              root: {
+                backgroundColor: "#f499c1",
+                border: "none",
+                padding: "5px 10px",
+                borderRadius: 10,
+                marginTop: 15,
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "#e488b0",
+                },
+              },
+            }}
+          >
+            Add Money
+          </Button>
+        </div>
+      </div>
+      <AddMoneyModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        wallet={activeWallet}
+        userWallets={user.wallets}
+      />
+    </>
+  );
+};
+
+export default WalletBalance;

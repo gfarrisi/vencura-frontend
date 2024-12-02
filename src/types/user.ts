@@ -3,26 +3,17 @@ export type User = {
   email: string;
   createdAt: number;
   updatedAt: number;
-  wallets: Wallet[];
+  wallets: UserWallet[];
 };
 
-export type Wallet = {
+export type UserWallet = {
   id: string;
   address: string;
   encryptedPrivateKey: string;
   encryptionIv: string;
   createdAt: number;
   updatedAt: number;
-};
-
-export type Transaction = {
-  id: string;
-  walletId: string;
-  transactionHash: string;
-  fromAddress: string;
-  toAddress: string;
-  amount: string;
-  status: string;
-  createdAt: number;
-  updatedAt: number;
+  isPrimaryWallet?: boolean;
+  isprimarywallet?: boolean;
+  balance?: number | string;
 };

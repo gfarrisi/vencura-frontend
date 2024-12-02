@@ -105,6 +105,12 @@ a.secondary {
   flex-shrink: 0;
 }
 
+.unstyledButton {
+  border: none;
+  background: none;
+  padding: 0;
+}
+
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   a.primary:hover {

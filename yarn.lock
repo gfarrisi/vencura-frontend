@@ -3103,6 +3103,18 @@
   dependencies:
     tslib "^2.4.0"
 
+"@tabler/icons-react@^3.23.0":
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons-react/-/icons-react-3.23.0.tgz#68dd3ee4995935c00228c1a401a10bb7d2d9c4be"
+  integrity sha512-uSJfu1Tnhk6AAkerNCOBL3KL3aPpb/bnB4UjTbV3jItTJKitEgr4a98ted67qu5FHB3/tG1bxs32pqy5OL7NGw==
+  dependencies:
+    "@tabler/icons" "3.23.0"
+
+"@tabler/icons@3.23.0":
+  version "3.23.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-3.23.0.tgz#d00b5c98c110fd0e773dff81f4776ba52e49f576"
+  integrity sha512-Cz+X58jfRm0g/KcupXXuPw5knj671lNR054AnmLXvCjudiQBWI0wZulDDSsqDoGezvBzMTNPQtNcjLkZs82ZxQ==
+
 "@turnkey/api-key-stamper@0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@turnkey/api-key-stamper/-/api-key-stamper-0.4.1.tgz#cd052f58f1732a7fde7a6fea2c1eb4192fe1e878"
