@@ -11,6 +11,7 @@ import { activeWalletAtom } from "@/atoms/walletAtom";
 import { useAtom } from "jotai";
 import PayModal from "./PayModal";
 import useUserWalletBalances from "@/hooks/useUserWallets";
+import api from "@/utils/api";
 
 type TabItem = {
   value: string;
@@ -22,11 +23,37 @@ const Dashboard = ({ user }: { user: User }) => {
   const [view, setView] = useState<"wallet" | "transactions">("wallet");
   const [openPayModal, setOpenPayModal] = useState<boolean>(false);
   const [activeWallet, setActiveWallet] = useAtom(activeWalletAtom);
-  //   useUserWalletBalances();
+
+  const getActiveWalletBalance = useCallback(
+    async (primaryWallet?: UserWallet) => {
+      //if primary wallet setActive wallet to primary wallet
+      const wallet = activeWallet ? activeWallet : primaryWallet;
+      if (!wallet) {
+        console.error("Cannot get balance for undefined wallet.");
+        return;
+      }
+      const getBalance = await api.get<{ balance: number }>(
+        `wallet/${wallet.id}/balance`
+      );
+      setActiveWallet({
+        ...wallet,
+        balance: getBalance.balance,
+      });
+    },
+    [activeWallet?.address]
+  );
 
   useEffect(() => {
-    setActiveWallet(user?.wallets[0] || undefined);
-  }, [user]);
+    getActiveWalletBalance(user?.wallets[0]);
+  }, [user?.wallets]);
+
+  //   create a timer that polls the balance every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getActiveWalletBalance();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [getActiveWalletBalance]);
 
   const changeActiveTab = useCallback(
     (newView: "wallet" | "transactions") => {

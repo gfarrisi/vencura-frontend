@@ -21,28 +21,6 @@ const WalletBalance = ({
   const [ethPrice, setEthPrice] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const getActiveWalletBalance = useCallback(async () => {
-    const getBalance = await api.get<{ balance: number }>(
-      `wallet/${activeWallet.id}/balance`
-    );
-    setActiveWallet({
-      ...activeWallet,
-      balance: getBalance.balance,
-    });
-  }, [activeWallet.address]);
-
-  useEffect(() => {
-    getActiveWalletBalance();
-  }, [getActiveWalletBalance]);
-
-  //create a timer that polls the balance every 10 seconds
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       getActiveWalletBalance();
-  //     }, 10000);
-  //     return () => clearInterval(interval);
-  //   }, [getActiveWalletBalance]);
-
   return (
     <>
       <div

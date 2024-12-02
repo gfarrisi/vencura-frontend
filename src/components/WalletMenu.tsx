@@ -1,6 +1,8 @@
 import { userAtom } from "@/atoms/userAtom";
+import { transactionsAtom } from "@/atoms/walletAtom";
 import { User, UserWallet } from "@/types/user";
 import api from "@/utils/api";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { Button, Container, Text, UnstyledButton } from "@mantine/core";
 import { ethers } from "ethers";
 import { useAtom } from "jotai";
@@ -28,15 +30,13 @@ const WalletMenu = ({
   wallets: UserWallet[];
   setActiveWallet: (wallet: UserWallet) => void;
 }) => {
-  const [ens, setEns] = useState<string | undefined>(undefined);
   const [image, setImage] = useState<string | undefined>(undefined);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const [user, setUser] = useAtom(userAtom);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  // const getEns = useCallback(async () => {
-  // }, [activeWallet.id]);
+  const [, setTransactions] = useAtom(transactionsAtom);
+  const { handleLogOut } = useDynamicContext();
 
   const getImage = useCallback(async () => {
     //check if dynamic image
@@ -47,6 +47,11 @@ const WalletMenu = ({
   useEffect(() => {
     getImage();
   }, [getImage]);
+
+  const handleChangeActiveWallet = useCallback((wallet: UserWallet) => {
+    setActiveWallet(wallet);
+    setTransactions([]);
+  }, []);
 
   const createNewWallet = async () => {
     setIsLoading(true);
@@ -119,6 +124,16 @@ const WalletMenu = ({
     }
   }, [error]);
 
+  const handleLogOutButtonClick = async () => {
+    const logout = await api.post<{ status: "success" | "error"; msg: string }>(
+      "user/logout"
+    );
+    if (logout.status === "success") {
+      handleLogOut();
+      setUser(undefined);
+    }
+  };
+
   return (
     <Container
       fluid
@@ -188,7 +203,7 @@ const WalletMenu = ({
                 {wallets.map((wallet) => (
                   <UnstyledButton
                     key={wallet.id}
-                    onClick={() => setActiveWallet(wallet)}
+                    onClick={() => handleChangeActiveWallet(wallet)}
                     style={{
                       backgroundColor: "transparent",
                       border: "none",
@@ -235,6 +250,27 @@ const WalletMenu = ({
                 >
                   <Text style={{ fontWeight: 550, color: "white" }}>
                     Add Wallet
+                  </Text>
+                </UnstyledButton>
+                <div style={{ height: 5 }} />
+                <UnstyledButton
+                  onClick={handleLogOutButtonClick}
+                  className="unstyledButton"
+                  style={{
+                    border: "none",
+                    cursor: "pointer",
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    backgroundColor: "#00000040",
+                    padding: 2,
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    borderRadius: 8,
+                  }}
+                >
+                  <Text style={{ fontWeight: 550, color: "white" }}>
+                    Log out
                   </Text>
                 </UnstyledButton>
               </div>
