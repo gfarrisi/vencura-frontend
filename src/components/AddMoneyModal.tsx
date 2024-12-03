@@ -31,10 +31,53 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
   const [amount, setAmount] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [walletOptions, setWalletOptions] = useState<
+    {
+      value: string;
+      walletId: string;
+      balance: number | string | undefined;
+      label: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     setHasMoreThanOneWallet(userWallets.length > 1);
   }, [userWallets]);
+
+  useEffect(() => {
+    const otherWallets = userWallets.filter(
+      (w) => w.address !== wallet.address
+    );
+
+    const options = otherWallets.map((w) => ({
+      value: w.address,
+      walletId: w.id,
+      balance: w.balance,
+      label: `(${w.address.slice(0, 6)}...${w.address.slice(-4)})`,
+    }));
+
+    setWalletOptions(options);
+  }, [userWallets, wallet.address]);
+
+  useEffect(() => {
+    if (!selectedWallet) return;
+
+    const updateBalance = async () => {
+      setAmount(selectedWallet.balance?.toString() || "");
+      const getBalance = await api.get<{ balance: number }>(
+        `wallet/${selectedWallet.walletId}/balance`
+      );
+      setWalletOptions((prevOptions) =>
+        prevOptions.map((option) =>
+          option.walletId === selectedWallet.walletId
+            ? { ...option, balance: getBalance.balance }
+            : option
+        )
+      );
+    };
+
+    updateBalance();
+  }, [selectedWallet]);
 
   if (!isOpen) return null;
 
@@ -46,15 +89,6 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
       console.error("Failed to copy address:", err);
     }
   };
-
-  const otherWallets = userWallets.filter((w) => w.address !== wallet.address);
-
-  const walletOptions = otherWallets.map((w) => ({
-    value: w.address,
-    walletId: w.id,
-    balance: w.balance,
-    label: `(${w.address.slice(0, 6)}...${w.address.slice(-4)})`,
-  }));
 
   console.log({ walletOptions, selectedWallet });
 
@@ -266,7 +300,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
                   }}
                   onChange={(e) => setAmount(e.target.value)}
                 />
-                <span
+                {/* <span
                   style={{
                     position: "absolute",
                     right: "12px",
@@ -281,7 +315,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
                       ? formatBalanceEth(selectedWallet.balance || 0)
                       : 0
                   } available`}
-                </span>
+                </span> */}
               </div>
             </div>
             {error && (
@@ -300,7 +334,10 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
               }}
             >
               <button
-                onClick={onClose}
+                onClick={() => {
+                  setView("copyAddress");
+                  setError(null);
+                }}
                 style={{
                   backgroundColor: "#999",
                   border: "none",

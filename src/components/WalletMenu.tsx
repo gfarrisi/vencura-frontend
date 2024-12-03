@@ -48,8 +48,15 @@ const WalletMenu = ({
     getImage();
   }, [getImage]);
 
-  const handleChangeActiveWallet = useCallback((wallet: UserWallet) => {
-    setActiveWallet(wallet);
+  const handleChangeActiveWallet = useCallback(async (wallet: UserWallet) => {
+    const getBalance = await api.get<{ balance: number }>(
+      `wallet/${wallet.id}/balance`
+    );
+    setActiveWallet({
+      ...wallet,
+      balance: getBalance.balance,
+    });
+
     setTransactions([]);
   }, []);
 
