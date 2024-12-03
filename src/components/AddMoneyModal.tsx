@@ -101,11 +101,11 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
       setIsSending(false);
       return;
     }
-    if (Number(amount) > Number(selectedWallet?.balance || 0)) {
-      setError("Amount is greater than the selected wallet balance.");
-      setIsSending(false);
-      return;
-    }
+    // if (Number(amount) > Number(selectedWallet?.balance || 0)) {
+    //   setError("Amount is greater than the selected wallet balance.");
+    //   setIsSending(false);
+    //   return;
+    // }
     try {
       const response = await api.post<SendTransactionResponse>(
         `wallet/${wallet.id}/fund-from-other-wallet`,
