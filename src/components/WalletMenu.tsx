@@ -58,40 +58,9 @@ const WalletMenu = ({
     setError(null);
 
     try {
-      // First check if they have a wallet
-      if (!window.ethereum) {
-        throw new Error("Please install MetaMask or another Web3 wallet");
-      }
-
-      // Get signature from primary custodial wallet
-      const custodialSignature = await api.get<{
-        message: string;
-        signature: string;
-        custodialAddress: string;
-      }>("wallet/get-signature-from-primary-wallet"); //do not need to pass in wallet id because we use the primary wallet for signature always
-
-      const { message, signature, custodialAddress } = custodialSignature;
-
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-
-      const userSignature = await signer.signMessage(message);
-
       const addWallet = await api.post<{
         updatedUser: User;
-      }>("user/new-wallet", {
-        body: JSON.stringify({
-          custodialSignature: signature,
-          userSignature,
-          message,
-          custodialAddress,
-          userAddress: accounts[0],
-        }),
-      });
+      }>("user/new-wallet");
       setUser(addWallet.updatedUser);
       setActiveWallet(addWallet.updatedUser.wallets[0]);
     } catch (error: any) {
