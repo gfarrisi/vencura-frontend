@@ -111,7 +111,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
         `wallet/${wallet.id}/fund-from-other-wallet`,
         {
           body: JSON.stringify({
-            amount: Number(amount),
+            amount: amount.toString(),
             toWalletId: selectedWallet?.walletId,
             fromWalletId: wallet.id,
           }),
