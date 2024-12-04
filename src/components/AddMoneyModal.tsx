@@ -138,7 +138,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
         console.log("error in response", { error: response.error });
         setError(response.error);
       } else if ("success" in response) {
-        alert("Funds sent transferred from other wallet.");
+        alert("Funds successfully transferred from other wallet.");
         handleClose();
       } else {
         setError("Failed to send funds");
