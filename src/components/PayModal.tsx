@@ -201,7 +201,7 @@ const PayModal: React.FC<PayModalProps> = ({
             fontSize: "12px",
           }}
         >
-          {loading ? "Loading..." : ""}
+          {loading ? " Sending funds... Please keep this window open." : ""}
         </div>
         <div
           style={{

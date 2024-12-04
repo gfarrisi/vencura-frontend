@@ -4,6 +4,7 @@ import { IconCopy } from "@tabler/icons-react";
 import { formatBalanceEth } from "./WalletBalance";
 import api from "@/utils/api";
 import { SendTransactionResponse } from "./PayModal";
+import { formatWalletAddress } from "./WalletMenu";
 
 interface AddMoneyModalProps {
   isOpen: boolean;
@@ -29,8 +30,8 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
     "copyAddress"
   );
   const [amount, setAmount] = useState<string>("");
-  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [walletOptions, setWalletOptions] = useState<
     {
       value: string;
@@ -48,12 +49,15 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
     const otherWallets = userWallets.filter(
       (w) => w.address !== wallet.address
     );
+    console.log({ otherWallets });
 
     const options = otherWallets.map((w) => ({
       value: w.address,
       walletId: w.id,
       balance: w.balance,
-      label: `(${w.address.slice(0, 6)}...${w.address.slice(-4)})`,
+      label: `${formatWalletAddress(w.address)}${
+        w.isprimarywallet ? ` (Primary)` : ""
+      }`,
     }));
 
     setWalletOptions(options);
@@ -63,7 +67,6 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
     if (!selectedWallet) return;
 
     const updateBalance = async () => {
-      setAmount(selectedWallet.balance?.toString() || "");
       const getBalance = await api.get<{ balance: number }>(
         `wallet/${selectedWallet.walletId}/balance`
       );
@@ -92,44 +95,62 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
 
   console.log({ walletOptions, selectedWallet });
 
+  const handleClose = () => {
+    setView("copyAddress");
+    setAmount("");
+    setLoading(false);
+    setError(null);
+    onClose();
+  };
+
   const sendFunds = async () => {
-    setIsSending(true);
+    setLoading(true);
     setError(null);
     //validate amount is number and greater than 0 and not greater than balance
     if (isNaN(Number(amount)) || Number(amount) <= 0) {
       setError("Amount must be a number greater than 0.");
-      setIsSending(false);
+      setLoading(false);
       return;
     }
-    // if (Number(amount) > Number(selectedWallet?.balance || 0)) {
-    //   setError("Amount is greater than the selected wallet balance.");
-    //   setIsSending(false);
-    //   return;
-    // }
+
+    const selectedWalletBalance = walletOptions.find(
+      (w) => w.value === selectedWallet?.value
+    )?.balance;
+
+    if (Number(amount) > Number(selectedWalletBalance || 0)) {
+      setError("Amount is greater than the selected wallet balance.");
+      setLoading(false);
+      return;
+    }
     try {
       const response = await api.post<SendTransactionResponse>(
         `wallet/${wallet.id}/fund-from-other-wallet`,
         {
           body: JSON.stringify({
             amount: amount.toString(),
-            toWalletId: selectedWallet?.walletId,
-            fromWalletId: wallet.id,
+            toWalletId: wallet.id,
+            fromWalletId: selectedWallet?.walletId,
           }),
         }
       );
-      if ("success" in response) {
-        alert("Funds sent transferred from other wallet.");
-        onClose();
-      } else {
+      console.log({ response });
+      if ("error" in response) {
+        console.log("error in response", { error: response.error });
         setError(response.error);
+      } else if ("success" in response) {
+        alert("Funds sent transferred from other wallet.");
+        handleClose();
+      } else {
+        setError("Failed to send funds");
       }
     } catch (error) {
       setError("Failed to send funds");
     } finally {
-      setIsSending(false);
-      setError(null);
+      setLoading(false);
     }
   };
+
+  console.log({ error });
 
   return (
     <>
@@ -143,7 +164,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
           backgroundColor: "rgba(0, 0, 0, 0.5)",
           zIndex: 1000,
         }}
-        onClick={onClose}
+        onClick={handleClose}
       />
       <div
         style={{
@@ -261,7 +282,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
             </button>
 
             <button
-              onClick={onClose}
+              onClick={handleClose}
               style={{
                 backgroundColor: "#999",
                 border: "none",
@@ -290,7 +311,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
                   disabled={!selectedWallet}
                   style={{
                     padding: "8px 12px",
-                    paddingRight: "125px",
+                    paddingRight: "300px",
                     fontSize: "14px",
                     border: "1px solid #ddd",
                     borderRadius: "4px",
@@ -300,7 +321,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
                   }}
                   onChange={(e) => setAmount(e.target.value)}
                 />
-                {/* <span
+                <span
                   style={{
                     position: "absolute",
                     right: "12px",
@@ -310,12 +331,11 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
                     pointerEvents: "none",
                   }}
                 >
-                  {`${
-                    selectedWallet
-                      ? formatBalanceEth(selectedWallet.balance || 0)
-                      : 0
-                  } available`}
-                </span> */}
+                  {`${formatBalanceEth(
+                    walletOptions.find((w) => w.value === selectedWallet?.value)
+                      ?.balance || 0
+                  )} available`}
+                </span>
               </div>
             </div>
             {error && (
@@ -323,6 +343,17 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
                 style={{ color: "red", marginBottom: "10px", fontSize: "12px" }}
               >
                 {error}
+              </div>
+            )}
+            {loading && (
+              <div
+                style={{
+                  color: "#7B7FEE",
+                  marginBottom: "10px",
+                  fontSize: "12px",
+                }}
+              >
+                Sending funds... Please keep this window open.
               </div>
             )}
 
@@ -369,7 +400,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({
                   Send funds
                 </button>
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   style={{
                     backgroundColor: "#999",
                     border: "none",

@@ -1,5 +1,4 @@
 import { UserWallet } from "@/types/user";
-import { Stack, Text, Group, ScrollArea } from "@mantine/core";
 import Image from "next/image";
 import { useCallback, useEffect } from "react";
 import { transactionsAtom } from "@/atoms/walletAtom";
@@ -64,94 +63,111 @@ const TransactionHistory = ({ activeWallet }: { activeWallet: UserWallet }) => {
   }, [getTransactions]);
 
   return (
-    <ScrollArea style={{ height: 100 }} scrollbarSize={0.01} type={"always"}>
-      <Stack>
-        {transactions?.map((txn) => {
-          return (
+    <div
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "400px",
+        maxHeight: "30vh",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          overflowY: "auto",
+          padding: "0 4px",
+        }}
+      >
+        {transactions?.map((txn) => (
+          <div
+            key={txn.txnHash}
+            style={{
+              backgroundColor: "white",
+              borderRadius: 15,
+              padding: "15px",
+              width: 280,
+              margin: "0 auto 10px auto",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              window.open(
+                `https://sepolia.etherscan.io/tx/${txn.txnHash}`,
+                "_blank"
+              );
+            }}
+          >
             <div
-              key={txn.txnHash}
               style={{
-                backgroundColor: "white",
-                borderRadius: 15,
-                padding: "15px 15px",
-                width: 280,
-                margin: "auto",
-                marginBottom: 10,
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                window.open(
-                  `https://sepolia.etherscan.io/tx/${txn.txnHash}`,
-                  "_blank"
-                );
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              <Group
-                display="flex"
+              <div
                 style={{
-                  justifyContent: "space-between",
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "center",
                 }}
               >
-                <Group
-                  display="flex"
-                  style={{
-                    // alignItems: "center",
-                    gap: 10,
-                  }}
-                >
-                  <Image
-                    src={"defaultProfiles/txnDefaultImg.svg"}
-                    alt="arrow-right"
-                    width={40}
-                    height={40}
-                  />
-
-                  <div>
-                    <Text
-                      style={{
-                        color: "black",
-                      }}
-                    >
-                      {`${formatWalletAddress(
-                        txn.toAddress.toLowerCase() ===
-                          activeWallet.address.toLowerCase()
-                          ? txn.fromAddress
-                          : txn.toAddress
-                      )}`}
-                    </Text>
-                    <Text
-                      style={{
-                        color: "black",
-                        fontSize: 12,
-                      }}
-                    >
-                      {`${formatDate(txn.timestamp)}`}
-                    </Text>
-                  </div>
-                </Group>
-
-                <Text
-                  style={{
-                    color:
+                <Image
+                  src={"defaultProfiles/txnDefaultImg.svg"}
+                  alt="arrow-right"
+                  width={40}
+                  height={40}
+                />
+                <div>
+                  <p
+                    style={{
+                      color: "black",
+                      margin: 0,
+                    }}
+                  >
+                    {formatWalletAddress(
                       txn.toAddress.toLowerCase() ===
-                      activeWallet.address.toLowerCase()
-                        ? "green"
-                        : "red",
-                  }}
-                >
-                  {`${
+                        activeWallet.address.toLowerCase()
+                        ? txn.fromAddress
+                        : txn.toAddress
+                    )}
+                  </p>
+                  <p
+                    style={{
+                      color: "black",
+                      fontSize: 12,
+                      margin: 0,
+                    }}
+                  >
+                    {formatDate(txn.timestamp)}
+                  </p>
+                </div>
+              </div>
+
+              <p
+                style={{
+                  margin: 0,
+                  color:
                     txn.toAddress.toLowerCase() ===
                     activeWallet.address.toLowerCase()
-                      ? "+"
-                      : "-"
-                  }${txn.amount} Ξ`}
-                </Text>
-              </Group>
+                      ? "green"
+                      : "red",
+                }}
+              >
+                {`${
+                  txn.toAddress.toLowerCase() ===
+                  activeWallet.address.toLowerCase()
+                    ? "+"
+                    : "-"
+                }${txn.amount} Ξ`}
+              </p>
             </div>
-          );
-        })}
-      </Stack>
-    </ScrollArea>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
